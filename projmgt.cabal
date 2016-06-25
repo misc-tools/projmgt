@@ -13,11 +13,11 @@ build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
 
-library
-  hs-source-dirs:      src
-  exposed-modules:     Data.String.Strip
-  build-depends:       base >= 4.7 && < 5
-  default-language:    Haskell2010
+-- library
+--   hs-source-dirs:      src
+--   exposed-modules:     Data.String.Strip
+--   build-depends:       base >= 4.7 && < 5
+--   default-language:    Haskell2010
 
 executable projmgt
   hs-source-dirs:      app
@@ -26,6 +26,7 @@ executable projmgt
   build-depends:       base
                      , projmgt
                      , turtle
+                     , foldl 
   default-language:    Haskell2010
 
 test-suite projmgt-test

@@ -1,7 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import Turtle 
+import Turtle.Format
+import qualified Control.Foldl as Fold 
 
 projectsDir = "/home/vietnguyen/projects"
 
@@ -17,18 +20,27 @@ listOrgs = do
 listProjects :: OrgName -> IO [ProjectName]
 listProjects = undefined 
 
--- | Check if there is any file (not folder) in the root project folder 
-checkInfantFile :: IO ()
-checkInfantFile = undefined
--- checkInfantFile = do 
---   listFilesAndFoldersInRoot <- liftIO $ filename <$> (ls projectsDir)
---   go listFilesAndFoldersInRoot
---      where go [] = putStrLn ""
---            go (x : xs) = case extension x of 
---                            Just ext -> putStrLn $ x + "is a file and need to be deleted" >> go xs
---                            Nothing -> go xs
+-- | Filter any files in the root project folder 
+findInfantFiles :: Shell Text 
+findInfantFiles = grep (has ".")  (format fp <$> (ls projectsDir))
 
-                    
+checkInfantFiles :: IO () 
+checkInfantFiles = do 
+  putStrLn "===\nCheck if there is any file in the root project folder: " 
+  n <- fold findInfantFiles Fold.length
+  if n == 0 then putStrLn "No file!"
+  else do 
+    putStrLn "File(s): "
+    stdout findInfantFiles
+    putStrLn "Need to remove these files!" 
+    putStrLn "==="
+    
+-- removeInfantFiles :: IO ()
+-- removeInfantFiles = sh (do 
+--                          infantFile <- findInfantFiles
+--                          liftIO (rm (FilePath infantFile))
+--                        )
 
 main :: IO ()
-main = listOrgs 
+main = do 
+  checkInfantFiles
