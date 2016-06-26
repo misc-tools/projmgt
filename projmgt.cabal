@@ -24,7 +24,6 @@ executable projmgt
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , projmgt
                      , turtle
                      , foldl 
                      , ansi-terminal
