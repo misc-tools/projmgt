@@ -28,6 +28,7 @@ executable projmgt
                      , turtle
                      , foldl 
                      , ansi-terminal
+                     , system-filepath
   default-language:    Haskell2010
 
 test-suite projmgt-test

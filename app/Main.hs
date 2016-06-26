@@ -6,24 +6,40 @@ import Turtle
 import Turtle.Format
 import qualified Control.Foldl as Fold 
 import System.Console.ANSI
+import qualified Filesystem.Path as Path
 
 projectsDir = "/home/vietnguyen/projects"
 
-type ProjectName = String
-type OrgName = String 
+type ProjectName = Text
+type OrgName = Text
 
 -- | List all organizations 
-listOrgs :: IO () -- [OrgName]
-listOrgs = do
+printOrgs :: IO ()
+printOrgs = do
   putStrLn "===\n Current Organizations:"
   view $ getName . toText . filename <$> (ls projectsDir)
   putStrLn "==="
-    where getName (Left a) = ""
-          getName (Right s) = s
+
+printProjects :: IO ()
+printProjects = do
+  putStrLn "===\nCurrent projects"
+  sh (do 
+
+       org <- ls projectsDir
+       liftIO (putStrLn "---")
+       liftIO (print $ format fp (filename org))
+       liftIO (putStrLn "---")
+       liftIO (view (listProjects org))
+     )
+  putStrLn "==="
+
+getName :: Either Text Text -> Text
+getName (Left a) = ""
+getName (Right s) = s
         
 -- | List all projects belonging to an organization
-listProjects :: OrgName -> IO [ProjectName]
-listProjects = undefined 
+listProjects :: Path.FilePath -> Shell ProjectName
+listProjects orgFilePath = getName . toText . filename <$> (ls orgFilePath)
 
 findOrgs :: Shell Text 
 findOrgs = grep (noneOf ".") (format fp <$> (ls projectsDir))
@@ -56,7 +72,9 @@ removeInfantFiles = sh (do
                          liftIO (rm $ fromText infantFile)
                        )
 
+
 main :: IO ()
 main = do 
   checkInfantFiles
-  listOrgs
+  printOrgs
+  printProjects
