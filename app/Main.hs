@@ -16,22 +16,21 @@ type OrgName = Text
 -- | List all organizations 
 printOrgs :: IO ()
 printOrgs = do
-  putStrLn "===\n Current Organizations:"
+  putStrLnColor Yellow "CURRENT ORGANIZATIONS:"
   view $ getName . toText . filename <$> (ls projectsDir)
-  putStrLn "==="
+
 
 printProjects :: IO ()
 printProjects = do
-  putStrLn "===\nCurrent projects"
+  putStrLnColor Yellow "CURRENT PROJECTS:"
   sh (do 
-
        org <- ls projectsDir
-       liftIO (putStrLn "---")
+       liftIO (setSGR [SetColor Foreground Vivid Blue])
        liftIO (print $ format fp (filename org))
-       liftIO (putStrLn "---")
+       liftIO (setSGR [Reset])
        liftIO (view (listProjects org))
      )
-  putStrLn "==="
+
 
 getName :: Either Text Text -> Text
 getName (Left a) = ""
@@ -50,22 +49,28 @@ findInfantFiles = grep (has ".")  (format fp <$> (ls projectsDir))
 
 checkInfantFiles :: IO () 
 checkInfantFiles = do 
-  putStrLn "===\nCheck if there is any file in the root project folder: " 
+  putStrLnColor Yellow "Check if there is any file in the root project folder: " 
   n <- fold findInfantFiles Fold.length
-  if n == 0 then do
-              setSGR [SetColor Foreground Vivid Green]              
-              putStrLn "No file!"
-              setSGR [Reset]
-  else do 
-    setSGR [SetColor Foreground Vivid Red]
-    putStrLn "File(s): "           
+  if n == 0 then putStrLnColor Green "No file!"
+  else do
+    putStrLnColor Red "File(s):"                                  
     stdout findInfantFiles
-    putStrLn "Need to remove these files!" 
-    setSGR [Reset]
+    putStrLnColor Red "Need to remove these files!" 
     removeInfantFiles
     putStrLn "Files removed."
-  putStrLn "==="
-    
+
+
+putStrColor :: Color -> String -> IO ()
+putStrColor c s = do
+  setSGR [SetColor Foreground Vivid c]
+  putStr s
+  setSGR [Reset]
+
+putStrLnColor :: Color -> String -> IO ()
+putStrLnColor c s = do
+  putStrColor c s
+  putStrLn ""
+  
 removeInfantFiles :: IO ()
 removeInfantFiles = sh (do 
                          infantFile <- findInfantFiles
@@ -76,5 +81,7 @@ removeInfantFiles = sh (do
 main :: IO ()
 main = do 
   checkInfantFiles
+  putStrLn ""
   printOrgs
+  putStrLn ""
   printProjects
