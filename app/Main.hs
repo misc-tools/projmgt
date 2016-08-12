@@ -7,6 +7,7 @@ import Turtle.Format
 import qualified Control.Foldl as Fold 
 import System.Console.ANSI
 import qualified Filesystem.Path as Path
+import Data.Text as T
 
 projectsDir = "/home/vietnguyen/projects"
 
@@ -26,7 +27,7 @@ printProjects = do
   sh (do 
        org <- ls projectsDir
        liftIO (setSGR [SetColor Foreground Vivid Blue])
-       liftIO (print $ format fp (filename org))
+       liftIO (putStrLn $ T.unpack $ format fp (filename org))
        liftIO (setSGR [Reset])
        liftIO (view (listProjects org))
      )
