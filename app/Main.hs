@@ -7,6 +7,7 @@ import Turtle.Format
 import qualified Control.Foldl as Fold 
 import System.Console.ANSI
 import qualified Filesystem.Path as Path
+import qualified GitHub as GH
 
 projectsDir = "/home/vietnguyen/projects"
 
